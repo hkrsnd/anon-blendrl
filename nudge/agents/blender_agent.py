@@ -126,10 +126,7 @@ class BlenderActor(nn.Module):
         return attributions
     
     def get_logic_explanation(self, logic_state, action):
-        # self.logic_action_probs.max().backward()
-        # self.logic_actor.V_T.max().backward()
         self.raw_action_probs.max().backward()
-        # print(self.logic_action_probs, self.logic_action_probs.max())
         atom_attributes = self.logic_actor.dummy_zeros.grad
         # normalize to [0, 1]
         minimum = atom_attributes.min()
@@ -137,21 +134,12 @@ class BlenderActor(nn.Module):
         atom_attributes = (atom_attributes - minimum) / (maximum - minimum)
         new_minimum = atom_attributes.min()
         new_maximum = atom_attributes.max()
-        if atom_attributes.max() > 1.0:
-            pass
-        # atom_attributes = atom_attributes / atom_attributes.max()
-        # print(atom_attributes)
-        # self.logic_actor.print_valuations(min_value=0.5)
-        # self.logic_actor.print_valuations_input(atom_attributes, min_value=0.5)
         self.logic_actor.dummy_zeros.grad.zero_()
         return atom_attributes
     
     def get_logic_explanation_IG(self, logic_state, action):
         self.logic_actor.eval()
         baseline = torch.zeros_like(logic_state).to(self.device)
-        # env action to predicate indices
-        # indices = self.env_action_id_to_action_pred_indices[action.item()]
-        # target_pred = self.logic_actor(logic_state)[indices].max().item()
         logic_pred_probs = self.logic_actor(logic_state)
         target_pred = torch.argmax(logic_pred_probs).item()
         
@@ -180,12 +168,6 @@ class BlenderActor(nn.Module):
         batch_size = neural_state.size(0)
         # weights size: B * 2
         weights = self.to_blender_policy_distribution(neural_state, logic_state)
-        # modify the weights (Seaquet no enemies)
-        weights_new = torch.zeros_like(weights).to(self.device)
-        weights_new[:,0] += 0.05
-        weights_new[:,1] += 0.95
-        weights = weights_new
-        # save weights: w1 and w2
         self.w_policy = weights[0]
         n_actions = neural_action_probs.size(1)
         # expanded weights size: B * N_actions * 2
@@ -233,9 +215,6 @@ class BlenderActor(nn.Module):
         Returns:
             action_probs: action probabilities
         """
-        # get prob for neural and logic policy
-        # probs = extract_policy_probs(self.blender, V_T, self.device)
-        # to logit
         assert self.blender_mode in ['logic', 'neural'], "Invalid blender mode {}".format(self.blender_mode)
         assert self.blend_function in ['softmax', 'gumbel_softmax'], "Invalid blend function {}".format(self.blend_function)
         
