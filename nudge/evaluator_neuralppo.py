@@ -70,26 +70,12 @@ class EvaluatorNeuralPPO:
 
         self.predicates = self.model.logic_actor.prednames
 
-        # self._init_pygame()
-
         self.running = True
         self.paused = False
         self.fast_forward = False
         self.reset = False
         self.takeover = False
-        
 
-    # def _init_pygame(self):
-    #     pygame.init()
-    #     pygame.display.set_caption("Environment")
-    #     frame = self.env.env.render()
-    #     self.env_render_shape = frame.shape[:2]
-    #     window_shape = list(self.env_render_shape)
-    #     if self.render_predicate_probs:
-    #         window_shape[0] += PREDICATE_PROBS_COL_WIDTH
-    #     self.window = pygame.display.set_mode(window_shape, pygame.SCALED)
-    #     self.clock = pygame.time.Clock()
-    #     self.font = pygame.font.SysFont('Calibri', 24)
 
     def run(self):
         length = 0
