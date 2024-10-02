@@ -194,12 +194,6 @@ class NudgeEnv(NudgeBaseEnv):
             self.bboxes[idx] = th.tensor(obj.xywh)
         return state
     
-        # TODO: Compute distances to Joey and Enemies
-    
-    # def object_id_to_ocatari_object(self, object_id):
-    #     # obj28 -> Ladder at (x, y), (h, w)
-    #     passa
-        
 
     def extract_neural_state(self, raw_input_state):
         """

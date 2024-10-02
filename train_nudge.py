@@ -130,7 +130,7 @@ class Args:
 def main():
         
     args = tyro.cli(Args)
-    rtpt = RTPT(name_initials='HS', experiment_name='NUDGE', max_iterations=int(args.total_timesteps / args.save_steps))
+    rtpt = RTPT(name_initials='XX', experiment_name='NUDGE', max_iterations=int(args.total_timesteps / args.save_steps))
     args.batch_size = int(args.num_envs * args.num_steps)
     args.minibatch_size = int(args.batch_size // args.num_minibatches)
     args.num_iterations = args.total_timesteps // args.batch_size
@@ -178,10 +178,7 @@ def main():
         # load neural agent weights
         agent.visual_neural_actor.load_state_dict(torch.load("models/neural_ppo_agent_Seaquest-v4.pth"))
         print("Pretrained neural agent loaded!!!")
-        # load logic agent weights
-        # agent = load_logic_ppo(path="models/logic_ppo_agent_Seaquest-v4.pth", agent=agent)
         agent.to(device)
-        # print("Pretrained logic agent loaded!!!")
         
     if args.recover:
         # load saved agent with the most recent step
@@ -201,8 +198,6 @@ def main():
     episodic_game_rewards= torch.zeros((args.num_envs)).to(device) 
         
     agent._print()
-    # if args.track:
-    #     wandb.watch([agent.logic_actor, agent.logic_critic, agent.visual_neural_actor, agent.blender]) #, log="all")
         
     rtpt.start()
     optimizer = optim.Adam(
@@ -240,11 +235,6 @@ def main():
     next_obs = torch.Tensor(next_obs).to(device)
     next_done = torch.zeros(args.num_envs).to(device)
 
-    # # (1, 4, 84, 84)
-    # for i in range(4):
-    #     image = wandb.Image(next_obs_array[0][0], caption=f"State at global_step={global_step}_{i}")
-        # wandb.log({"state_image": image})
-    
     for iteration in range(1, args.num_iterations + 1):
         # Annealing the rate if instructed to do so.
         if args.anneal_lr:
@@ -280,24 +270,12 @@ def main():
             next_obs, next_logic_obs, next_done = torch.Tensor(next_obs).to(device), torch.Tensor(next_logic_obs).to(device), torch.Tensor(next_done).to(device)
 
             episodic_game_rewards += torch.tensor(reward).to(device).view(-1)
-            # print("episodic game reward: ", episodic_game_rewards.detach().cpu().numpy())
-            # for r in reward:
-            #     if r > 0.5:
-            #         print("Reward:", reward)
-            # Plot image
-            # next_obs_array = next_obs.detach().cpu().numpy()
-            # max_rgb = np.max(next_obs_array)
-            # # (1, 4, 84, 84)
-            # for i in range(4):
-            #     image = wandb.Image(next_obs_array[0][i], caption=f"State at global_step={global_step}_{i}")
-            #     wandb.log({"state_image": image})
         
             for k, info_ in enumerate(infos):
                 if "final_info" in info_: # or next_done.any():
                     info = info_['final_info']
                     # final_info = info['final_info']
                     if "episode" in info:
-                        # print(f"global_step={global_step}, episodic_return={info['episode']['r']}, episodic_length={info['episode']['l']}")
                         print(f"env={k}, global_step={global_step}, episodic_game_reward={np.round(episodic_game_rewards[k].detach().cpu().numpy(), 2)}, episodic_return={info['episode']['r']}, episodic_length={info['episode']['l']}")
                         writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
                         writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
@@ -327,7 +305,6 @@ def main():
                 training_log = (episodic_returns, episodic_lengths, value_losses, policy_losses, entropies, blend_entropies)
                 with open(checkpoint_dir / "training_log.pkl", "wb") as f:
                     pickle.dump(training_log, f)
-                    
                 
                 # increase the updated bar
                 save_step_bar += args.save_steps

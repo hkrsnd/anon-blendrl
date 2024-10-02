@@ -117,15 +117,9 @@ def close_by_diver(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
 
 def _close_by(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     th = 48
-    player_x = player[..., 1]
-    player_y = player[..., 2]
-    obj_x = obj[..., 1]
-    obj_y = obj[..., 2]
     obj_prob = obj[:, 0]
     dist = (player[:, 1:2] - obj[:, 1:2]).pow(2).sum(1).sqrt()
     return bool_to_probs(dist < th) * obj_prob
-    # result = th.clip((128 - abs(player_x - obj_x) - abs(player_y - obj_y)) / 128, 0, 1) * obj_prob
-    # return result
 
 def _not_close_by(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     player_x = player[..., 1]

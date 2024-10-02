@@ -17,15 +17,6 @@ from nsfr.utils.common import bool_to_probs
             'Time': 1,}       
 """
 
-# def climbing(player: th.Tensor) -> th.Tensor:
-#     status = player[..., 3]
-#     return bool_to_probs(status == 12)
-
-
-# def not_climbing(player: th.Tensor) -> th.Tensor:
-#     status = player[..., 3
-#     return bool_to_probs(status != 12)
-
 def nothing_around(objs: th.Tensor) -> th.Tensor:
     # target objects: fruit, bell, monkey, fallingcoconut, throwncoconut
     fruits = objs[:, 2:5]
@@ -240,19 +231,12 @@ def not_close_by_enemy(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     return _not_close_by(player, obj)
 
 
-
-
-
 def left_of_diver(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     """True iff the player is 'left of' the object."""
     player_x = player[..., 1]
     obj_x = obj[..., 1]
     obj_prob = obj[:, 0]
     return bool_to_probs(player_x < obj_x) * obj_prob
-
-
-
-
 
 def right_of_diver(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     """True iff the player is 'right of' the object."""

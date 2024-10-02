@@ -17,14 +17,6 @@ from nsfr.utils.common import bool_to_probs
             'Time': 1,}       
 """
 
-# def climbing(player: th.Tensor) -> th.Tensor:
-#     status = player[..., 3]
-#     return bool_to_probs(status == 12)
-
-
-# def not_climbing(player: th.Tensor) -> th.Tensor:
-#     status = player[..., 3
-#     return bool_to_probs(status != 12)
 
 def nothing_around(objs: th.Tensor) -> th.Tensor:
     # target objects: fruit, bell, monkey, fallingcoconut, throwncoconut
@@ -33,13 +25,11 @@ def nothing_around(objs: th.Tensor) -> th.Tensor:
     monkey = objs[:, 32:36]
     falling_coconut = objs[:, 36].unsqueeze(1)
     thrown_coconut = objs[:, 37:40]
-    # target_objs = th.cat([fruits, bell, monkey, falling_coconut, thrown_coconut], dim=1)
     target_objs = th.cat([monkey, falling_coconut, thrown_coconut], dim=1)
     players = objs[:, 0].unsqueeze(1).expand(-1, target_objs.size(1), -1)
     
     # batch_size * num_target_objs
     probs = th.stack([_close_by(players[:, i, :], target_objs[:, i, :]) for i in range(target_objs.size(1))], dim=1)
-    
     max_closeby_prob, _ = probs.max(dim=1)
     result = (1.0 - max_closeby_prob).float()
     return result
@@ -75,9 +65,6 @@ def on_pl_bell(bell: th.Tensor, obj: th.Tensor) -> th.Tensor:
 def on_ladder(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     player_x = player[..., 1]
     obj_x = obj[..., 1]
-    player_y = player[..., 2]
-    obj_y = obj[..., 2]
-    obj_prob = obj[:, 0]
     x_prob =  bool_to_probs(abs(player_x - obj_x) < 4)
     return x_prob
     # y_prob = bool_to_probs(obj_y > player_y - 8)
@@ -232,20 +219,12 @@ def not_close_by_missile(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
 def not_close_by_enemy(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     return _not_close_by(player, obj)
 
-
-
-
-
 def left_of_diver(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     """True iff the player is 'left of' the object."""
     player_x = player[..., 1]
     obj_x = obj[..., 1]
     obj_prob = obj[:, 0]
     return bool_to_probs(player_x < obj_x) * obj_prob
-
-
-
-
 
 def right_of_diver(player: th.Tensor, obj: th.Tensor) -> th.Tensor:
     """True iff the player is 'right of' the object."""
