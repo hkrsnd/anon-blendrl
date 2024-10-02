@@ -1,7 +1,5 @@
 # BlendRL: A Framework for Merging Symbolic and Neural Policies
 
-<!-- <img src="assets/blenderl.png" alt="drawing" height="200"/> -->
-
 ## Quickstart
 Install `nsfr` and `nudge`.
 
@@ -13,18 +11,14 @@ python train_blenderl.py --env-name seaquest --joint-training --num-steps 128 --
 - --num-steps: the number of steps for policy rollout
 - --num-envs: the number of environments to train agents
 - --gamma: the discount factor for future rewards
-<!--
-1. Install all requirements via
-    ```bash
-    pip install -r requirements.txt
-    ```
-2. On project level, simply run `python train.py` to start a new training run.
--->
+
+
 Play script:
 ```
-python play_gui.py
+python play_gui.py --env-name Kangaroo
 ```
-Note that a checkpoint is required to run the play script.
+Note that a checkpoint is required to run the play script. Kangaroo, Seaquest, and DonkeyKong are available.
+
 ## How to Use
 ### Hyperparameters
 The hyperparameters are configured inside `in/config/default.yaml` which is loaded as default. You can specify a different configuration by providing the corresponding YAML file path as an argument, e.g., `python train.py in/config/my_config.yaml`. A description of all hyperparameters can be found in `train.py`.
@@ -54,8 +48,6 @@ Install PyG and torch-scatter packages for neumann reasoner. See the [installati
     pip install pyg_lib torch_scatter torch_sparse -f https://data.pyg.org/whl/torch-1.12.0+cu116.html
     ```
 3. Clone [CleanRL](https://github.com/vwxyzjn/cleanrl) to the BlendRL home folder.
-
-
 
 
 ## How to Set up New Environments
